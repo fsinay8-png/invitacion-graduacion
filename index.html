@@ -1033,11 +1033,23 @@
     }
     rsvpMsg.classList.add('show');
 
-    const guestsLabel = "2 personas";
+    const guest = window.selectedGuest;
+    let guestsLabel;
+    if(guest){
+      guestsLabel = guest.size === 1
+        ? "Solo yo"
+        : "Yo + " + (guest.size - 1) + (guest.size - 1 === 1 ? " persona más" : " personas más");
+    }
 
-    const text = answer === 'yes'
-      ? "¡Hola! Confirmo con alegría mi asistencia a la graduación de Alex Leonel 🎓 Ahí estaré el 19 de septiembre. Asistiremos: " + guestsLabel + "."
-      : "Hola, lamentablemente no podré acompañarlos en la graduación de Alex Leonel el 19 de septiembre. ¡Felicidades para él!";
+    let text;
+    if(answer === 'yes'){
+      text = "¡Hola! Confirmo con alegría mi asistencia a la graduación de Alex Leonel 🎓 Ahí estaré el 19 de septiembre."
+        + (guest ? " Soy " + guest.name + ". Asistiremos: " + guestsLabel + "." : "");
+    } else {
+      text = "Hola, lamentablemente no podré acompañarlos en la graduación de Alex Leonel el 19 de septiembre."
+        + (guest ? " Soy " + guest.name + "." : "")
+        + " ¡Felicidades para él!";
+    }
     window.open("https://wa.me/" + rsvpNumber + "?text=" + encodeURIComponent(text), "_blank");
   }
   btnYes.addEventListener('click', function(){ selectRSVP('yes'); });
@@ -1204,6 +1216,8 @@
       function selectGuest(selectedName){
         const guest = guestData.find(function(g){ return g.name === selectedName; });
         if(!guest) return;
+
+        window.selectedGuest = guest;
 
         label.textContent = guest.name;
         Array.prototype.forEach.call(panel.querySelectorAll('.name-option'), function(el){
